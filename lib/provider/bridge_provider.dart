@@ -193,11 +193,11 @@ class BridgeProvider extends BaseProvider {
           ? connection['last_wallet_event_id']
           : 0;
 
-      if (lastId != null && id <= lastId) {
+      /*if (lastId != null && id <= lastId) {
         logger.e(
             'Received event id (=$id) must be greater than stored last wallet event id (=$lastId)');
         return;
-      }
+      }*/
 
       if (walletMessage.containsKey('event') &&
           walletMessage['event'] != 'connect') {

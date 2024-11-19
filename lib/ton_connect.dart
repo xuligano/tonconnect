@@ -20,6 +20,9 @@ class TonConnect {
   List<void Function(dynamic value)> _statusChangeSubscriptions = [];
   List<void Function(dynamic value)> _statusChangeErrorSubscriptions = [];
 
+  List<void Function(dynamic value)> _successSubscriptions = [];
+  List<void Function(SendTransactionError value)> _errorSubscriptions = [];
+
   /// Shows if the wallet is connected right now.
   bool get connected => wallet != null;
 
@@ -60,6 +63,30 @@ class TonConnect {
       if (errorsHandler != null &&
           _statusChangeErrorSubscriptions.contains(errorsHandler)) {
         _statusChangeErrorSubscriptions.remove(errorsHandler);
+      }
+    }
+
+    return unsubscribe;
+  }
+
+  Function onError(void Function(SendTransactionError value) callback) {
+    _errorSubscriptions.add(callback);
+
+    unsubscribe() {
+      if (_errorSubscriptions.contains(callback)) {
+        _errorSubscriptions.remove(callback);
+      }
+    }
+
+    return unsubscribe;
+  }
+
+  Function onSuccess(void Function(dynamic value) callback) {
+    _successSubscriptions.add(callback);
+
+    unsubscribe() {
+      if (_successSubscriptions.contains(callback)) {
+        _successSubscriptions.remove(callback);
       }
     }
 
@@ -177,8 +204,7 @@ class TonConnect {
             'Wallet is not able to handle such SendTransaction request. Max support messages number is $maxMessages, but $requiredMessages is required.');
       }
     } else {
-      logger.w(
-          "Connected wallet didn't provide information about max allowed messages in the SendTransaction request. Request may be rejected by the wallet.");
+      //logger.w("Connected wallet didn't provide information about max allowed messages in the SendTransaction request. Request may be rejected by the wallet.");
     }
   }
 
@@ -195,6 +221,20 @@ class TonConnect {
       _onWalletConnectError(data['payload']);
     } else if (data['event'] == 'disconnect') {
       _onWalletDisconnected();
+    }
+
+    if (data.containsKey("result")) {
+      for (var it in _successSubscriptions) {
+        it(data);
+      }
+    }
+
+    if (data.containsKey("error")) {
+      final error = SendTransactionError.from(data);
+
+      for (var it in _errorSubscriptions) {
+        it(error);
+      }
     }
   }
 

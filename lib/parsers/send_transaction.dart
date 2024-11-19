@@ -72,3 +72,18 @@ class SendTransactionParser extends RpcParser {
     return response.containsKey('error');
   }
 }
+
+class SendTransactionError {
+
+  final int code;
+  final String message;
+
+  SendTransactionError(this.code, this.message);
+
+  factory SendTransactionError.from(Map<String, dynamic> response) {
+    final message = response['error']?['message'];
+    final code = response['error']?['code'];
+
+    return SendTransactionError(code, message);
+  }
+}
