@@ -51,6 +51,7 @@ class SendTransactionParser extends RpcParser {
   Map<String, dynamic> convertFromRpcResponse(
       Map<String, dynamic> rpcResponse) {
     return {
+      'id': rpcResponse['id'],
       'boc': rpcResponse['result'],
     };
   }
@@ -75,15 +76,17 @@ class SendTransactionParser extends RpcParser {
 
 class SendTransactionError {
 
+  final dynamic id;
   final int code;
   final String message;
 
-  SendTransactionError(this.code, this.message);
+  SendTransactionError(this.id, this.code, this.message);
 
   factory SendTransactionError.from(Map<String, dynamic> response) {
+    final id = response['id'];
     final message = response['error']?['message'];
     final code = response['error']?['code'];
 
-    return SendTransactionError(code, message);
+    return SendTransactionError(id, code, message);
   }
 }

@@ -155,7 +155,12 @@ class BridgeProvider extends BaseProvider {
 
     final completer = Completer<Map<String, dynamic>>();
     _pendingRequests[id] = completer;
-    return _pendingRequests;
+
+    final result = <String, dynamic>{};
+    result.addAll(_pendingRequests);
+    result["id"] = id;
+
+    return result;
   }
 
   @override
