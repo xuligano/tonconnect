@@ -155,11 +155,11 @@ class WalletInfo {
       return false;
     }
 
-    var wcWhash = account!.address.split(':')[2];
+    var wcWhash = account!.address.split(':')[1];
     var wc = int.parse(wcWhash[0]);
     var whash = wcWhash[1];
 
-    Uint8List message = Uint8List(0);
+    var message = <int>[];
     message.addAll(utf8.encode('ton-proof-item-v2/'));
     message.addAll(_intToBytes(wc, Endian.little));
     message.addAll(HEX.decode(whash));
@@ -172,7 +172,7 @@ class WalletInfo {
       message.addAll(utf8.encode(tonProof!.payload));
     }
 
-    var signatureMessage = Uint8List(0);
+    var signatureMessage = <int>[];
     signatureMessage.addAll(HEX.decode('ffff'));
     signatureMessage.addAll(utf8.encode('ton-connect'));
     signatureMessage.addAll(sha256.convert(message).bytes);
